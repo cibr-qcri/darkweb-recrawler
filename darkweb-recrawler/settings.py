@@ -27,10 +27,10 @@ LOG_TIMEVAL = 60
 HTML_ON_OSS = True
 
 # If True, crawler will retry after a request failure.
-RETRY_ENABLED = False
+RETRY_ENABLED = True
 
 # Timeout for processing of DNS queries in seconds. Float is supported.
-DOWNLOAD_TIMEOUT = 50
+DOWNLOAD_TIMEOUT = 500
 
 # Depth limit for pages to the homepage of its site
 SITE_DEPTH_LIMIT = 2
