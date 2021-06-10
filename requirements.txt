@@ -1,0 +1,7 @@
+scrapy
+elasticsearch
+scrapy_proxies
+python-dateutil
+beautifulsoup4
+scrapy-redis
+pysummarization
