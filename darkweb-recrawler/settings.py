@@ -16,7 +16,7 @@ DIRNAME = os.path.dirname(os.path.abspath(__file__))
 # Whether to enable logging.
 LOG_ENABLED = True
 # Minimum level to log. Available levels are: CRITICAL, ERROR, WARNING, INFO, DEBUG. For more info see Logging.
-LOG_LEVEL = "DEBUG"
+LOG_LEVEL = "INFO"
 # File name to use for logging output. If None, standard error will be used.
 # LOG_FILE = DIRNAME + "/logging"
 

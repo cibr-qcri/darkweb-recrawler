@@ -76,10 +76,9 @@ class TorSpider(RedisSpider):
             yield item
 
             if ONION_PAT.match(response.url):
-                print("############################/n##############################")
-                print(self.server.scard(domain_key))
                 for u in sorted(url_links):
-                    if self.server.scard(domain_key) > 50:
+                    domain_count = self.server.scard(domain_key)
+                    if domain_count >= 50:
                         break
                     if ONION_PAT.match(u) and u != url:
                         if self.helper.get_domain(u) == domain:
