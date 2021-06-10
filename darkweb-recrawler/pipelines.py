@@ -1,12 +1,13 @@
 import os
 import re
+import urllib.parse
 from datetime import datetime
 from hashlib import sha256
 
 from scrapy_redis.pipelines import RedisPipeline
 
-from .support import TorHelper
 from .es7 import ES7
+from .support import TorHelper
 
 
 class TorspiderPipeline(RedisPipeline):
@@ -84,5 +85,6 @@ class TorspiderPipeline(RedisPipeline):
         except OSError:
             pass
 
-        with open("{path}/{file}".format(path=path, file=url), "w+") as f:
-            f.write(page)
+        f = open("{path}/{file}".format(path=path, file=urllib.parse.quote(url, safe='')), "w+")
+        f.write(page)
+        f.close()
