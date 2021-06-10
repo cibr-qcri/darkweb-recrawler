@@ -52,13 +52,14 @@ class TorSpider(RedisSpider):
         url = self.helper.unify(response.url)
         domain = self.helper.get_domain(url)
 
-        domain_first = self.server.sadd('domains', domain)
-        self.server.sadd(domain, url)
-
         soup = BeautifulSoup(response.text, "lxml")
         url_links = set(self.helper.unify(urljoin(url, a.get("href"))) for a in soup.find_all("a"))
 
         if ONION_PAT.match(response.url):
+            domain_key = domain.replace('.onion', '')
+            domain_first = self.server.sadd('domains', domain_key)
+            self.server.sadd(domain_key, url)
+
             external_links_tor = list()
             external_links_web = list()
             item = TorspiderItem()
@@ -82,10 +83,10 @@ class TorSpider(RedisSpider):
             if ONION_PAT.match(response.url):
                 for u in sorted(url_links):
                     if ONION_PAT.match(u) and u != url:
-                        if self.server.scard(domain) > 50:
+                        if self.server.scard(domain_key) > 50:
                             break
                         if self.helper.get_domain(u) == domain:
-                            u.replace("onion.link", "onion")
+                            u = u.replace("onion.link", "onion")
                             self.server.sadd(domain, u)
                             yield scrapy.Request(u, dont_filter=True, callback=self.parse, errback=self.handle_error)
                         else:
