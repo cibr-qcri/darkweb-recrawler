@@ -66,7 +66,7 @@ DOMAIN_LIMIT_RATE = 50
 # If enabled, Scrapy will wait a random amount of time (between 0.5 * DOWNLOAD_DELAY and 1.5 * DOWNLOAD_DELAY) while
 # fetching requests from the same website.
 # DOWNLOAD_DELAY = 2
-RANDOMIZE_DOWNLOAD_DELAY = True
+RANDOMIZE_DOWNLOAD_DELAY = False
 
 # If enabled, Scrapy will respect robots.txt policies.
 ROBOTSTXT_OBEY = False
