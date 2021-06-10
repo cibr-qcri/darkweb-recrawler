@@ -6,7 +6,7 @@ from scrapy import signals
 
 from .support import TorHelper
 
-http_proxy = os.getenv("TOR_PROXY_SERVICE_HOST") + ":8118"
+http_proxy = "http://" + os.getenv("TOR_PROXY_SERVICE_HOST")+":8118"
 ignore_type = (".png", ".jpg", ".jpeg", ".gif", ".pdf", ".zip", ".gz", ".rar")
 request_count = {}
 
