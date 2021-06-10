@@ -1,6 +1,5 @@
 import os
 import re
-import urllib.parse
 from datetime import datetime
 from hashlib import sha256
 
@@ -64,17 +63,12 @@ class TorspiderPipeline(RedisPipeline):
             "raw_data": page
         }
 
-        '''
         try:
             self.write_to_file(page, domain, url)
-        except :
+        except:
             pass
-        '''
-        self.write_to_file(page, domain, url)
 
         self.es.persist_report(tag, es_id)
-
-        # return item
 
     def write_to_file(self, page, domain, url):
         current_date = datetime.today()
@@ -86,6 +80,7 @@ class TorspiderPipeline(RedisPipeline):
         except OSError:
             pass
 
-        f = open("{path}/{file}".format(path=path, file=urllib.parse.quote(url, safe='')), "w+")
+        url_hash = sha256(url.encode("utf-8")).hexdigest()
+        f = open("{path}/{file}".format(path=path, file=url_hash), "w+")
         f.write(page)
         f.close()
