@@ -27,10 +27,10 @@ LOG_TIMEVAL = 60
 HTML_ON_OSS = True
 
 # If True, crawler will retry after a request failure.
-RETRY_ENABLED = True
+RETRY_ENABLED = False
 
 # Timeout for processing of DNS queries in seconds. Float is supported.
-DOWNLOAD_TIMEOUT = 30
+DOWNLOAD_TIMEOUT = 20
 
 # Depth limit for pages to the homepage of its site
 SITE_DEPTH_LIMIT = 2
@@ -170,8 +170,8 @@ ITEM_PIPELINES = {
 # REDIS_URL = 'redis://root:darkweb-recrawler@47.88.60.163:6379'
 # REDIS_PORT = 6379
 
-REDIS_HOST = 'localhost' # os.getenv("REDIS_MASTER_SERVICE_HOST")
-REDIS_PORT = 6379 # os.getenv("REDIS_MASTER_SERVICE_PORT")
+REDIS_HOST = os.getenv("REDIS_MASTER_SERVICE_HOST")
+REDIS_PORT = os.getenv("REDIS_MASTER_SERVICE_PORT")
 
 USER_AGENT = [
     "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; AcooBrowser; .NET CLR 1.1.4322; .NET CLR 2.0.50727)",
@@ -210,8 +210,8 @@ USER_AGENT = [
     "Mozilla/5.0 (X11; U; Linux x86_64; zh-CN; rv:1.9.2.10) Gecko/20100922 Ubuntu/10.10 (maverick) Firefox/3.6.10",
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
 ]
-ELASTICSEARCH_CLIENT_SERVICE_HOST = '10.4.8.146'#os.getenv('ELASTICSEARCH_MASTER_SERVICE_HOST')
-ELASTICSEARCH_CLIENT_SERVICE_PORT = 9200#os.getenv('ELASTICSEARCH_MASTER_SERVICE_PORT')
+ELASTICSEARCH_CLIENT_SERVICE_HOST = os.getenv('ELASTICSEARCH_MASTER_SERVICE_HOST')
+ELASTICSEARCH_CLIENT_SERVICE_PORT = os.getenv('ELASTICSEARCH_MASTER_SERVICE_PORT')
 ELASTICSEARCH_USERNAME = 'elastic'
 ELASTICSEARCH_PASSWORD = 'changeme'
 ELASTICSEARCH_INDEX = 'recrawlers'
