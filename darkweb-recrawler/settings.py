@@ -30,7 +30,7 @@ HTML_ON_OSS = True
 RETRY_ENABLED = False
 
 # Timeout for processing of DNS queries in seconds. Float is supported.
-DOWNLOAD_TIMEOUT = 20
+DOWNLOAD_TIMEOUT = 50
 
 # Depth limit for pages to the homepage of its site
 SITE_DEPTH_LIMIT = 2
@@ -71,8 +71,6 @@ RANDOMIZE_DOWNLOAD_DELAY = True
 # If enabled, Scrapy will respect robots.txt policies.
 ROBOTSTXT_OBEY = False
 
-SCHEDULER_PERSIST = True
-
 BOT_NAME = 'darkweb-recrawler'
 
 SPIDER_MODULES = ['darkweb-recrawler.spiders']
@@ -91,7 +89,7 @@ NEWSPIDER_MODULE = 'darkweb-recrawler.spiders'
 # Configure a delay for requests for the same website (default: 0)
 # See https://doc.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-# DOWNLOAD_DELAY = 1
+DOWNLOAD_DELAY = 2
 # The download delay setting will honor only one of:
 # CONCURRENT_REQUESTS_PER_DOMAIN = 16
 # CONCURRENT_REQUESTS_PER_IP = 16
