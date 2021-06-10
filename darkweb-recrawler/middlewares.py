@@ -1,14 +1,12 @@
 import os
 import random
-import re
-from urllib.parse import urlparse
 
 import scrapy
 from scrapy import signals
 
 from .support import TorHelper
 
-http_proxy = "http://10.4.8.146:8118" #+ os.getenv("TOR_PROXY_SERVICE_HOST")+":8118"
+http_proxy = os.getenv("TOR_PROXY_SERVICE_HOST") + ":8118"
 ignore_type = (".png", ".jpg", ".jpeg", ".gif", ".pdf", ".zip", ".gz", ".rar")
 request_count = {}
 
@@ -123,5 +121,3 @@ class TorspiderDownloaderMiddleware(object):
 
     def spider_opened(self, spider):
         spider.logger.info('Spider opened: %s' % spider.name)
-
-
