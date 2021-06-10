@@ -77,12 +77,12 @@ class TorSpider(RedisSpider):
 
             if ONION_PAT.match(response.url):
                 for u in sorted(url_links):
+                    if self.server.scard(domain_key) > 50:
+                        break
                     if ONION_PAT.match(u) and u != url:
-                        if self.server.scard(domain_key) > 50:
-                            break
                         if self.helper.get_domain(u) == domain:
                             u = u.replace("onion.link", "onion")
-                            self.server.sadd(domain, u)
+                            self.server.sadd(domain_key, u)
                             yield scrapy.Request(u, dont_filter=True, callback=self.parse, errback=self.handle_error)
                         else:
                             pass  # Push into Redis

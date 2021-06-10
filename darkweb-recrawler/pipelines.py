@@ -64,16 +64,14 @@ class TorspiderPipeline(RedisPipeline):
             "raw_data": page
         }
 
-
-        '''try:
+        try:
             self.write_to_file(page, domain, url)
         except :
-            pass'''
-        self.write_to_file(page, domain, url)
+            pass
 
         self.es.persist_report(tag, es_id)
 
-        return item
+        # return item
 
     def write_to_file(self, page, domain, url):
         current_date = datetime.today()
