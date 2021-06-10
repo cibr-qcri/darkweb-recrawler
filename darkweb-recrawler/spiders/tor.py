@@ -4,7 +4,6 @@ from urllib.parse import urljoin
 
 import scrapy
 from bs4 import BeautifulSoup
-from scrapy.exceptions import DontCloseSpider
 from scrapy.spidermiddlewares.httperror import HttpError
 from scrapy_redis.spiders import RedisSpider
 from twisted.internet.error import DNSLookupError
@@ -37,20 +36,17 @@ class TorSpider(RedisSpider):
     def process_token(value):
         return remove_tags(value.extract()).strip('\r\t\n')
 
-    def spider_idle(self):
-        # self.clear_queues()
-        self.schedule_next_requests()
-        raise DontCloseSpider
-
     def clear_queues(self):
         domains = self.server.smembers('domains')
         self.server.delete(*domains)
         self.server.delete('domains')
 
+    '''
     def start_requests(self):
         self.start_urls = self.get_start_urls()
         for url in self.start_urls:
             yield scrapy.Request(url, dont_filter=True, callback=self.parse, errback=self.handle_error)
+    '''
 
     def parse(self, response):
         url = self.helper.unify(response.url)
@@ -107,6 +103,8 @@ class TorSpider(RedisSpider):
             request = failure.request
             self.logger.error('TimeoutError on %s', request.url)
 
+    '''
     def get_start_urls(self):
         es = ES7()
         return [self.helper.unify(domain) for domain in es.get_domains()]
+    '''
