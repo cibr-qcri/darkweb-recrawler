@@ -64,10 +64,13 @@ class TorspiderPipeline(RedisPipeline):
             "raw_data": page
         }
 
+        '''
         try:
             self.write_to_file(page, domain, url)
         except :
             pass
+        '''
+        self.write_to_file(page, domain, url)
 
         self.es.persist_report(tag, es_id)
 
