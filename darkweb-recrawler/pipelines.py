@@ -84,5 +84,5 @@ class TorspiderPipeline(RedisPipeline):
         except OSError:
             pass
 
-        with open("{path}/{file}".format(path=path, file=url), "w") as f:
+        with open("{path}/{file}".format(path=path, file=url), "w+") as f:
             f.write(page)
