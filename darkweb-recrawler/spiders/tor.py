@@ -7,7 +7,6 @@ from bs4 import BeautifulSoup
 from scrapy.spidermiddlewares.httperror import HttpError
 from scrapy_redis.spiders import RedisSpider
 from twisted.internet.error import DNSLookupError
-from w3lib.html import remove_tags
 
 from ..es7 import ES7
 from ..items import TorspiderItem
@@ -31,10 +30,6 @@ class TorSpider(RedisSpider):
         self.dirname = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         self.domain_count = dict()
         self.es = ES7()
-
-    @staticmethod
-    def process_token(value):
-        return remove_tags(value.extract()).strip('\r\t\n')
 
     def clear_queues(self):
         domains = self.server.smembers('domains')
@@ -67,7 +62,7 @@ class TorSpider(RedisSpider):
             item['page'] = response.text
             item['url'] = url
             item['domain'] = domain
-            item['title'] = soup.title
+            item['title'] = soup.title.string.strip() if soup.title else ""
             item["is_landing_page"] = domain_first > 0
             for u in url_links:
                 if self.helper.get_domain(u) != domain:
