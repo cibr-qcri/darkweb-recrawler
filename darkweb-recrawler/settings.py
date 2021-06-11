@@ -30,6 +30,7 @@ HTML_ON_OSS = True
 RETRY_ENABLED = True
 
 # Timeout for processing of DNS queries in seconds. Float is supported.
+DNS_TIMEOUT = 300
 DOWNLOAD_TIMEOUT = 200
 
 # Depth limit for pages to the homepage of its site
@@ -42,7 +43,7 @@ ENABLE_BDB_SEARCH = True
 # if zero (default), no priority adjustment is made from depth
 # a positive value will decrease the priority, i.e. higher depth requests will be processed later ; this is commonly used when doing breadth-first crawls (BFO)
 # a negative value will increase priority, i.e., higher depth requests will be processed sooner (DFO)
-DEPTH_PRIORITY = 1
+DEPTH_PRIORITY = 0
 
 # Enables scheduling storing requests queue in redis.
 SCHEDULER = "scrapy_redis.scheduler.Scheduler"
