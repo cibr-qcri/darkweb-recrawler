@@ -31,11 +31,6 @@ class TorSpider(RedisSpider):
         self.domain_count = dict()
         self.es = ES7()
 
-    def clear_queues(self):
-        domains = self.server.smembers('domains')
-        self.server.delete(*domains)
-        self.server.delete('domains')
-
     def start_requests(self):
         self.start_urls = self.get_start_urls()
         for url in self.start_urls:
@@ -99,5 +94,5 @@ class TorSpider(RedisSpider):
             self.logger.error('TimeoutError on %s', request.url)
 
     def get_start_urls(self):
-        es = ES7()
-        return [self.helper.unify(domain) for domain in es.get_domains()]
+        domains = self.es.get_domains()
+        return [self.helper.unify(domain) for domain in domains]
