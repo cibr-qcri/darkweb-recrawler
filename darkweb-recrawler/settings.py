@@ -34,7 +34,7 @@ RETRY_ENABLED = False
 DOWNLOAD_TIMEOUT = 50
 
 # Depth limit for pages to the homepage of its site
-SITE_DEPTH_LIMIT = 500
+SITE_DEPTH_LIMIT = 5000
 
 ENABLE_BDB_SEARCH = True
 
@@ -87,7 +87,7 @@ NEWSPIDER_MODULE = 'darkweb-recrawler.spiders'
 # ROBOTSTXT_OBEY = True
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-# CONCURRENT_REQUESTS = 64
+CONCURRENT_REQUESTS = 1
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://doc.scrapy.org/en/latest/topics/settings.html#download-delay
