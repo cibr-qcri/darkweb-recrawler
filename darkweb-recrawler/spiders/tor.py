@@ -29,12 +29,14 @@ class TorSpider(RedisSpider):
         self.seq_number = 0
         self.dirname = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         self.domain_count = dict()
-        self.es = ES7()
+        # self.es = ES7()
 
+    '''
     def start_requests(self):
         self.start_urls = self.get_start_urls()
         for url in self.start_urls:
             yield scrapy.Request(url, dont_filter=False, callback=self.parse, errback=self.handle_error)
+    '''
 
     def parse(self, response):
         url = self.helper.unify(response.url)
@@ -93,6 +95,8 @@ class TorSpider(RedisSpider):
             request = failure.request
             self.logger.error('TimeoutError on %s', request.url)
 
+    '''
     def get_start_urls(self):
         domains = self.es.get_domains()
         return [self.helper.unify(domain) for domain in domains]
+    '''
