@@ -34,7 +34,7 @@ RETRY_ENABLED = False
 DOWNLOAD_TIMEOUT = 50
 
 # Depth limit for pages to the homepage of its site
-SITE_DEPTH_LIMIT = 2
+SITE_DEPTH_LIMIT = 30
 
 ENABLE_BDB_SEARCH = True
 
@@ -43,7 +43,7 @@ ENABLE_BDB_SEARCH = True
 # if zero (default), no priority adjustment is made from depth
 # a positive value will decrease the priority, i.e. higher depth requests will be processed later ; this is commonly used when doing breadth-first crawls (BFO)
 # a negative value will increase priority, i.e., higher depth requests will be processed sooner (DFO)
-DEPTH_PRIORITY = 0
+DEPTH_PRIORITY = 1
 
 # Enables scheduling storing requests queue in redis.
 SCHEDULER = "scrapy_redis.scheduler.Scheduler"
@@ -67,10 +67,12 @@ DOMAIN_LIMIT_RATE = 50
 # If enabled, Scrapy will wait a random amount of time (between 0.5 * DOWNLOAD_DELAY and 1.5 * DOWNLOAD_DELAY) while
 # fetching requests from the same website.
 # DOWNLOAD_DELAY = 2
-RANDOMIZE_DOWNLOAD_DELAY = False
 
 # If enabled, Scrapy will respect robots.txt policies.
 ROBOTSTXT_OBEY = False
+
+DOWNLOAD_DELAY = 2
+RANDOMIZE_DOWNLOAD_DELAY = True
 
 BOT_NAME = 'darkweb-recrawler'
 
