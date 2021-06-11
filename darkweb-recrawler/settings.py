@@ -116,7 +116,8 @@ NEWSPIDER_MODULE = 'darkweb-recrawler.spiders'
 # Enable or disable downloader middlewares
 # See https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-    'darkweb-recrawler.middlewares.TorspiderDownloaderMiddleware': 543,
+    'scrapy.downloadermiddleware.useragent.UserAgentMiddleware': None,
+    'darkweb-recrawler.middlewares.TorspiderDownloaderMiddleware': 400,
 }
 
 # Enable or disable extensions
