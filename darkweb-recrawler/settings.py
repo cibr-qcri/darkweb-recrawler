@@ -27,11 +27,11 @@ LOG_TIMEVAL = 60
 HTML_ON_OSS = True
 
 # If True, crawler will retry after a request failure.
-RETRY_ENABLED = True
+RETRY_ENABLED = False
 
 # Timeout for processing of DNS queries in seconds. Float is supported.
-DNS_TIMEOUT = 300
-DOWNLOAD_TIMEOUT = 200
+DNS_TIMEOUT = 500
+DOWNLOAD_TIMEOUT = 500
 
 # Depth limit for pages to the homepage of its site
 SITE_DEPTH_LIMIT = 2
@@ -116,8 +116,7 @@ NEWSPIDER_MODULE = 'darkweb-recrawler.spiders'
 # Enable or disable downloader middlewares
 # See https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-    'scrapy.downloadermiddleware.useragent.UserAgentMiddleware': None,
-    'darkweb-recrawler.middlewares.TorspiderDownloaderMiddleware': 400,
+    'darkweb-recrawler.middlewares.TorspiderDownloaderMiddleware': 543,
 }
 
 # Enable or disable extensions
