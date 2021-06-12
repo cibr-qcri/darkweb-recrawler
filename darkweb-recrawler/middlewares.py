@@ -93,10 +93,11 @@ class TorspiderDownloaderMiddleware(object):
         request.headers['User-Agent'] = agent
 
         if ".onion" in request.url:
-            request.url = request.url.replace('.onion', '.onion.ws')
+            url = request.url.replace('.onion', '.onion.ws')
+            request = request.replace(url=url)
             # request.meta['proxy'] = http_proxy
 
-        return None
+        return request
 
     def process_response(self, request, response, spider):
         # Called with the response returned from the downloader.
@@ -109,7 +110,8 @@ class TorspiderDownloaderMiddleware(object):
         #     self.time_log.pop(request.url)
         #     raise scrapy.exceptions.IgnoreRequest
         if ".onion.ws" in request.url:
-            response.url = response.url.replace('.onion.ws', '.onion')
+            url = response.url.replace('.onion.ws', '.onion')
+            response = response.replace(url=url)
 
         return response
 
