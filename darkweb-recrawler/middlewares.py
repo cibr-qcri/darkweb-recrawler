@@ -89,13 +89,14 @@ class TorspiderDownloaderMiddleware(object):
         if request.url.endswith(ignore_type):
             raise scrapy.exceptions.IgnoreRequest
 
-        agent = random.choice(self.user_agent)
-        request.headers['User-Agent'] = agent
+        if ".onion.ws" in request.url: pass
 
         if ".onion" in request.url:
             url = request.url.replace('.onion', '.onion.ws')
             request = request.replace(url=url)
             # request.meta['proxy'] = http_proxy
+        agent = random.choice(self.user_agent)
+        request.headers['User-Agent'] = agent
 
         return request
 
@@ -109,7 +110,7 @@ class TorspiderDownloaderMiddleware(object):
         # if b"Content-Type" not in response.headers or b"text/html" not in response.headers[b"Content-Type"] :
         #     self.time_log.pop(request.url)
         #     raise scrapy.exceptions.IgnoreRequest
-        if ".onion.ws" in request.url:
+        if ".onion.ws" in response.url:
             url = response.url.replace('.onion.ws', '.onion')
             response = response.replace(url=url)
 
