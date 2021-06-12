@@ -40,12 +40,12 @@ class TorSpider(RedisSpider):
 
     def parse(self, response):
         url = self.helper.unify(response.url)
-        domain = self.helper.get_domain(url)
 
         soup = BeautifulSoup(response.text, "lxml")
         url_links = set(self.helper.unify(urljoin(url, a.get("href"))) for a in soup.find_all("a"))
 
-        if ONION_PAT.match(response.url):
+        if ONION_PAT.match(response.url) and 'Onion.ws' not in soup.text:
+            domain = self.helper.get_domain(url)
             domain_key = domain.replace('.onion', '')
             domain_first = self.server.sadd('domains', domain_key)
             self.server.sadd(domain_key, url)
