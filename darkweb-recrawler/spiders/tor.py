@@ -75,7 +75,7 @@ class TorSpider(RedisSpider):
             if ONION_PAT.match(response.url):
                 for u in sorted(url_links):
                     domain_count = self.server.scard(domain_key)
-                    if domain_count >= 50:
+                    if domain_count >= 30:
                         break
                     if ONION_PAT.match(u) and u != url:
                         if self.helper.get_domain(u) == domain:
