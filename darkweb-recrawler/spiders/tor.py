@@ -44,7 +44,7 @@ class TorSpider(RedisSpider):
         soup = BeautifulSoup(response.text, "lxml")
         url_links = set(self.helper.unify(urljoin(url, a.get("href"))) for a in soup.find_all("a"))
 
-        if ONION_PAT.match(response.url) and 'Onion.ws' not in soup.text:
+        if ONION_PAT.match(response.url) and 'Onion.ws is a darknet gateway or proxy' not in soup.text:
             domain = self.helper.get_domain(url)
             domain_key = domain.replace('.onion', '')
             domain_first = self.server.sadd('domains', domain_key)
@@ -57,9 +57,11 @@ class TorSpider(RedisSpider):
             item['page'] = response.text
             item['url'] = url
             item['domain'] = domain
-            item['title'] = soup.title.string.strip() if soup.title else ""
+            item['title'] = soup.title.string.strip() if soup.title and soup.title.string else ""
             item["is_landing_page"] = domain_first > 0
             for u in url_links:
+                u = u.replace("onion.link", "onion")
+                u = u.replace("onion.ws", "onion")
                 if self.helper.get_domain(u) != domain:
                     if ONION_PAT.match(u):
                         external_links_tor.append(u)
