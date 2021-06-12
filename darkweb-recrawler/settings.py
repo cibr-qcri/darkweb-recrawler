@@ -16,7 +16,7 @@ DIRNAME = os.path.dirname(os.path.abspath(__file__))
 # Whether to enable logging.
 LOG_ENABLED = True
 # Minimum level to log. Available levels are: CRITICAL, ERROR, WARNING, INFO, DEBUG. For more info see Logging.
-LOG_LEVEL = "DEBUG"
+LOG_LEVEL = "INFO"
 # File name to use for logging output. If None, standard error will be used.
 # LOG_FILE = DIRNAME + "/logging"
 
@@ -34,7 +34,7 @@ RETRY_ENABLED = False
 DOWNLOAD_TIMEOUT = 50
 
 # Depth limit for pages to the homepage of its site
-SITE_DEPTH_LIMIT = 5000
+SITE_DEPTH_LIMIT = 50
 
 ENABLE_BDB_SEARCH = True
 
