@@ -72,19 +72,23 @@ class TorSpider(RedisSpider):
 
             yield item
 
+            external_domains = set()
             if ONION_PAT.match(response.url):
                 for u in sorted(url_links):
                     domain_count = self.server.scard(domain_key)
                     if domain_count >= 30:
                         break
                     if ONION_PAT.match(u) and u != url:
+                        u = u.replace("onion.link", "onion")
+                        u = u.replace("onion.ws", "onion")
                         if self.helper.get_domain(u) == domain:
-                            u = u.replace("onion.link", "onion")
-                            u = u.replace("onion.ws", "onion")
                             self.server.sadd(domain_key, u)
                             yield scrapy.Request(u, dont_filter=False, callback=self.parse, errback=self.handle_error)
                         else:
-                            pass  # Push into Redis
+                            external_domains.add(self.helper.unify(self.helper.get_domain(u)))
+            external_domains = list(external_domains)
+            if len(external_domains) > 0:
+                self.server.lpush('sup-darkweb-crawler:start_urls', *external_domains)
 
     def handle_error(self, failure):
         self.logger.debug(repr(failure))
