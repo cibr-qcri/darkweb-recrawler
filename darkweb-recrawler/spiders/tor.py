@@ -78,6 +78,7 @@ class TorSpider(RedisSpider):
                     if ONION_PAT.match(u) and u != url:
                         if self.helper.get_domain(u) == domain:
                             u = u.replace("onion.link", "onion")
+                            u = u.replace("onion.ws", "onion")
                             self.server.sadd(domain_key, u)
                             yield scrapy.Request(u, dont_filter=False, callback=self.parse, errback=self.handle_error)
                         else:
