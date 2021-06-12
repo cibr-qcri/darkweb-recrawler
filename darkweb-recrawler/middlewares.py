@@ -7,7 +7,8 @@ from scrapy import signals
 from .support import TorHelper
 
 #http_proxy = "http://" + os.getenv("TOR_PROXY_SERVICE_HOST")+":8118"
-ignore_type = (".png", ".jpg", ".jpeg", ".gif", ".pdf", ".zip", ".gz", ".rar", ".deb", ".wav", ".mp4")
+ignore_type = (".png", ".jpg", ".jpeg", ".gif", ".pdf", ".zip", ".gz", ".rar", ".deb", ".wav", ".mp4", ".zip", ".mp3",
+               ".gz", ".rar", ".sig", ".epub", ".xz")
 request_count = {}
 
 
@@ -86,7 +87,7 @@ class TorspiderDownloaderMiddleware(object):
         # - or raise IgnoreRequest: process_exception() methods of
         #   installed downloader middleware will be called
 
-        if request.url.endswith(ignore_type):
+        if request.url.lower().endswith(ignore_type):
             raise scrapy.exceptions.IgnoreRequest
 
         if ".onion.ws" in request.url:
