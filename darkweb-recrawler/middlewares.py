@@ -90,10 +90,10 @@ class TorspiderDownloaderMiddleware(object):
         if request.url.lower().endswith(ignore_type):
             raise scrapy.exceptions.IgnoreRequest
 
-        if ".onion.ws" in request.url:
+        if ".onion.pet" in request.url:
             return None
         elif ".onion" in request.url:
-            url = request.url.replace('.onion', '.onion.ws')
+            url = request.url.replace('.onion', '.onion.pet')
             request = request.replace(url=url)
             # request.meta['proxy'] = http_proxy
 
@@ -114,8 +114,8 @@ class TorspiderDownloaderMiddleware(object):
         # if b"Content-Type" not in response.headers or b"text/html" not in response.headers[b"Content-Type"] :
         #     self.time_log.pop(request.url)
         #     raise scrapy.exceptions.IgnoreRequest
-        if ".onion.ws" in response.url:
-            url = response.url.replace('.onion.ws', '.onion')
+        if ".onion.pet" in response.url:
+            url = response.url.replace('.onion.pet', '.onion')
             response = response.replace(url=url)
 
         return response
