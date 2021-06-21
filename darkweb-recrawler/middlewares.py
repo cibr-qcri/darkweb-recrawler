@@ -6,7 +6,7 @@ from scrapy import signals
 
 from .support import TorHelper
 
-#http_proxy = "http://" + os.getenv("TOR_PROXY_SERVICE_HOST")+":8118"
+http_proxy = "http://" + os.getenv("TOR_PROXY_SERVICE_HOST")+":8118"
 ignore_type = (".png", ".jpg", ".jpeg", ".gif", ".pdf", ".zip", ".gz", ".rar", ".deb", ".wav", ".mp4", ".zip", ".mp3",
                ".gz", ".rar", ".sig", ".epub", ".xz")
 request_count = {}
@@ -90,17 +90,20 @@ class TorspiderDownloaderMiddleware(object):
         if request.url.lower().endswith(ignore_type):
             raise scrapy.exceptions.IgnoreRequest
 
+        '''
         if ".onion.pet" in request.url:
             return None
-        elif ".onion" in request.url:
+        '''
+        if ".onion" in request.url:
+            request.meta['proxy'] = http_proxy
+            '''
             url = request.url.replace('.onion', '.onion.pet')
             request = request.replace(url=url)
-            # request.meta['proxy'] = http_proxy
-
+            '''
             agent = random.choice(self.user_agent)
             request.headers['User-Agent'] = agent
 
-            return request
+            # return request
 
         return None
 
@@ -114,9 +117,11 @@ class TorspiderDownloaderMiddleware(object):
         # if b"Content-Type" not in response.headers or b"text/html" not in response.headers[b"Content-Type"] :
         #     self.time_log.pop(request.url)
         #     raise scrapy.exceptions.IgnoreRequest
+        '''
         if ".onion.pet" in response.url:
             url = response.url.replace('.onion.pet', '.onion')
             response = response.replace(url=url)
+        '''
 
         return response
 
