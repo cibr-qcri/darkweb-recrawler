@@ -34,6 +34,14 @@ class TorspiderPipeline(RedisPipeline):
         es_id = url + datetime.today().strftime("%d-%m-%y")
         es_id = sha256(es_id.encode("utf-8")).hexdigest()
 
+        path = "/mnt/data/{date}/{domain}".format(date=self.date.strftime("%d-%m-%y"), domain=domain)
+        url_hash = sha256(url.encode("utf-8")).hexdigest()
+        file = "{path}/{file}".format(path=path, file=url_hash)
+        try:
+            self.write_to_file(page, path, file)
+        except:
+            pass
+
         tag = {
             "timestamp": datetime.now().timestamp() * 1000,
             "type": "recrawl",
@@ -60,27 +68,23 @@ class TorspiderPipeline(RedisPipeline):
                     }
                 }
             },
-            "raw_data": page
+            "page": {
+                "path": file,
+                "hash": sha256(page.encode("utf-8")).hexdigest()
+            }
         }
-
-        try:
-            self.write_to_file(page, domain, url)
-        except:
-            pass
 
         self.es.persist_report(tag, es_id)
 
-    def write_to_file(self, page, domain, url):
+    def write_to_file(self, page, path, file):
         current_date = datetime.today()
         if self.date != current_date:
             self.date = current_date
-        path = "/mnt/data/{date}/{domain}".format(date=self.date.strftime("%d-%m-%y"), domain=domain)
         try:
             os.makedirs(path)
         except OSError:
             pass
 
-        url_hash = sha256(url.encode("utf-8")).hexdigest()
-        f = open("{path}/{file}".format(path=path, file=url_hash), "w+")
+        f = open(file, "w+")
         f.write(page)
         f.close()
