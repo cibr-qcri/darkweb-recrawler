@@ -1,90 +1,121 @@
 import os
-import re
 from datetime import datetime
 from hashlib import sha256
-
-from scrapy_redis.pipelines import RedisPipeline
 
 from .es7 import ES7
 from .support import TorHelper
 
 
-class TorspiderPipeline(RedisPipeline):
+class TorPipeline(object):
 
-    def __init__(self, server):
-        super().__init__(server)
-        self.dirname = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    def __init__(self):
         self.helper = TorHelper()
-        self.date = datetime.today()
         self.es = ES7()
 
-    def process_item(self, item, spider):
+    @staticmethod
+    def write_files(item):
+        date = item["date"]
+        domain = item["domain"]
         url = item["url"]
-        domain = item['domain']
-        page = item['page']
+        rendered_page = item["rendered_page"]
+        raw_page = item["raw_page"]
+        js = item["js_files"]
+        css = item["css_files"]
+        screenshot = item["screenshot"]
 
-        btc_addr_pat = re.compile(
-            r"\b(1[a-km-zA-HJ-NP-Z1-9]{25,34})\b|\b(3[a-km-zA-HJ-NP-Z1-9]{25,34})\b|\b(bc1[a-zA-HJ-NP-Z0-9]{25,39})\b"
-        )
-        addr_list = set()
-        for res in btc_addr_pat.findall(page):
-            addr_list.update(set(res))
-
-        addr_list = set(filter(self.helper.check_bc, addr_list))
-        es_id = url + datetime.today().strftime("%d-%m-%y")
-        es_id = sha256(es_id.encode("utf-8")).hexdigest()
-
-        path = "/mnt/data/{date}/{domain}".format(date=self.date.strftime("%d-%m-%y"), domain=domain)
+        root_dir = "/mnt/data"
+        path = "{date}/{domain}".format(date=date.strftime("%d-%m-%y"), domain=domain)
         url_hash = sha256(url.encode("utf-8")).hexdigest()
-        file = "{path}/{file}".format(path=path, file=url_hash)
+        base_dir = "{path}/{file}".format(path=path, file=url_hash)
+        js_dir = "{base}/js".format(base=base_dir)
+        css_dir = "{base}/css".format(base=base_dir)
+
+        rendered_page_path = None
+        raw_page_path = None
+        js_paths = []
+        css_paths = []
+        screenshot_path = None
+
         try:
-            self.write_to_file(page, path, file)
-        except:
-            pass
-
-        tag = {
-            "timestamp": datetime.now().timestamp() * 1000,
-            "type": "recrawl",
-            "source": "tor",
-            "method": "html",
-            "info": {
-                "domain": domain,
-                "url": url,
-                "title": item['title'],
-                "external_urls": {
-                    "href_urls": {
-                        "web": item["external_links_web"],
-                        "tor": item["external_links_tor"]
-                    }
-                },
-                "tags": {
-                    "cryptocurrency": {
-                        "address": {
-                            "btc": list(addr_list)
-                        }
-                    },
-                    "hidden_service": {
-                        "landing_page": item["is_landing_page"]
-                    }
-                }
-            },
-            "page": {
-                "path": file,
-                "hash": sha256(page.encode("utf-8")).hexdigest()
-            }
-        }
-
-        self.es.persist_report(tag, es_id)
-
-    def write_to_file(self, page, path, file):
-        current_date = datetime.today()
-        if self.date != current_date:
-            self.date = current_date
-        try:
-            os.makedirs(path)
+            os.makedirs("{root}/{css}".format(root=root_dir, css=css_dir))
         except OSError:
             pass
 
-        f = open(file, "w+")
-        f.write(page)
-        f.close()
+        try:
+            os.makedirs("{root}/{js}".format(root=root_dir, js=js_dir))
+        except OSError:
+            pass
+
+        if rendered_page:
+            rendered_page_path = "{base}/rendered.html".format(base=base_dir)
+            with open("{root}/{path}".format(root=root_dir, path=rendered_page_path), encoding="utf-8", mode="w",
+                      errors='ignore') as f:
+                f.write(rendered_page)
+        if raw_page:
+            raw_page_path = "{base}/raw.html".format(base=base_dir)
+            with open("{root}/{path}".format(root=root_dir, path=raw_page_path), encoding="utf-8", mode="w",
+                      errors='ignore') as f:
+                f.write(raw_page)
+        if screenshot:
+            screenshot_path = "{base}/screenshot.jpeg".format(base=base_dir)
+            with open("{root}/{path}".format(root=root_dir, path=screenshot_path), encoding="utf-8", mode="wb",
+                      errors='ignore') as f:
+                f.write(screenshot)
+        if len(js) > 0:
+            for i in range(len(js)):
+                js_path = "{js}/{index}.js".format(js=js_dir, index=i)
+                js_paths.append(js_path)
+                with open("{root}/{js}".format(root=root_dir, js=js_path), encoding="utf-8", mode="w",
+                          errors='ignore') as f:
+                    f.write(js[i])
+        if len(css) > 0:
+            for i in range(len(css)):
+                css_path = "{css}/{index}.css".format(css=css_dir, index=i)
+                css_paths.append(css_path)
+                with open("{root}/{css}".format(root=root_dir, css=css_path), encoding="utf-8", mode="w",
+                          errors='ignore') as f:
+                    f.write(css[i])
+
+        item["page"] = {
+            "raw_md5": item["raw_md5"],
+            "css": item["css"] or len(css) > 0,
+            "js": item["js"] or len(js) > 0,
+            "paths": {
+                "raw": raw_page_path,
+                "rendered": rendered_page_path,
+                "screenshot": screenshot_path,
+                "js": js_paths,
+                "css": css_paths,
+            }}
+
+        return item
+
+    def process_item(self, item, spider):
+        url = item["url"]
+        domain = item["domain"]
+        page_info = TorPipeline.write_files(item)
+
+        tag = {
+            "timestamp": int(datetime.now().timestamp() * 1000),
+            "type": "recrawl",
+            "source": "tor",
+            "method": "html",
+            "version": 2,
+            "info": {
+                "version": item["version"],
+                "response_header": item["response_header"],
+                "homepage": item["homepage"],
+                "domain": domain,
+                "url": url,
+                "scheme": item["scheme"],
+                "title": item["title"],
+                "urls": item["urls"],
+                "cryptocurrency": item["btc"]
+            },
+            "page": page_info
+        }
+
+        if item["scheme"] == "https":
+            tag["info"]["tls_cert"] = self.helper.get_tls_cert(domain, url)
+
+        self.es.persist_report({"data": tag}, self.helper.get_esid(url))

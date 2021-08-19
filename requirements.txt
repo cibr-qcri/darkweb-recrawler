@@ -5,3 +5,7 @@ python-dateutil
 beautifulsoup4
 scrapy-redis
 pysummarization
+scrapy-splash
+socks
+requests[socks]
+pysocks

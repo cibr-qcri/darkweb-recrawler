@@ -1,14 +1,12 @@
+import base64
+import hashlib
 import os
 import re
-from urllib.parse import urljoin
+from datetime import datetime
 
-import scrapy
 from bs4 import BeautifulSoup
-from scrapy.spidermiddlewares.httperror import HttpError
 from scrapy_redis.spiders import RedisSpider
-from twisted.internet.error import DNSLookupError
 
-from ..es7 import ES7
 from ..items import TorspiderItem
 from ..support import TorHelper
 
@@ -17,10 +15,6 @@ ONION_PAT = re.compile(r"(?:https?://)?(([^/.]*)\.)*(\w{56}|\w{16})\.onion")
 
 class TorSpider(RedisSpider):
     name = "darkweb-recrawler"
-    start_source = {}
-    log_timeval = 3600
-    tor_ref_timeval = 600
-    seq_number = 0
 
     def __init__(self):
         RedisSpider.__init__(self)
@@ -29,82 +23,90 @@ class TorSpider(RedisSpider):
         self.seq_number = 0
         self.dirname = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         self.domain_count = dict()
-        # self.es = ES7()
 
-    '''
-    def start_requests(self):
-        self.start_urls = self.get_start_urls()
-        for url in self.start_urls:
-            yield scrapy.Request(url, dont_filter=False, callback=self.parse, errback=self.handle_error)
-    '''
+    def make_requests_from_url(self, url):
+        yield TorHelper.build_splash_request(url, callback=self.parse)
 
     def parse(self, response):
-        url = self.helper.unify(response.url)
+        history = response.data['history']
+        last_response = history[-1]["response"]
+        redirect_status = response.data['redirect_status']
 
-        soup = BeautifulSoup(response.text, "lxml")
-        url_links = set(self.helper.unify(urljoin(url, a.get("href"))) for a in soup.find_all("a"))
+        requested_url = response.url.strip("/")
+        url = last_response["url"].strip("/")
+        scheme = self.helper.get_scheme(url)
+        domain = self.helper.get_domain(url)
 
-        if ONION_PAT.match(response.url) and 'Onion.pet acts as a proxy' not in soup.text:
-            domain = self.helper.get_domain(url)
+        http_redirect, other_redirect = self.helper \
+            .build_redirect_paths(history, response.data["http_redirects"], requested_url, url)
+        self.helper.persist_http_redirects(http_redirect)
+
+        js_files = response.data["js"]
+        css_files = response.data["css"]
+
+        for rurl, meta in other_redirect.items():
+            if meta["type"] == "meta":
+                yield TorHelper\
+                    .build_splash_request(rurl, callback=self.parse, wait=meta["wait"], to=meta["to"], type="meta")
+            else:
+                yield TorHelper.build_splash_request(rurl, callback=self.parse, to=meta["to"], type="js")
+
+        rendered_page = response.data["rendered"]
+        raw_page = str(base64.b64decode(last_response["content"]["text"]))
+
+        headers = dict()
+        for entry in last_response["headers"]:
+            headers[entry["name"]] = entry["value"]
+
+        soup_rendered = BeautifulSoup(rendered_page, "lxml")
+        urls = self.helper.extract_all_urls(url, domain, scheme, soup_rendered)
+
+        if ONION_PAT.match(url):
             domain_key = domain.replace('.onion', '')
-            domain_first = self.server.sadd('domains', domain_key)
             self.server.sadd(domain_key, url)
 
-            external_links_tor = list()
-            external_links_web = list()
             item = TorspiderItem()
+            item["date"] = datetime.today()
             item["url"] = url
-            item['page'] = response.text
-            item['url'] = url
             item['domain'] = domain
-            item['title'] = soup.title.string.strip() if soup.title and soup.title.string else ""
-            item["is_landing_page"] = domain_first > 0
-            for u in url_links:
-                u = u.replace("onion.link", "onion")
-                u = u.replace("onion.ws", "onion")
-                if self.helper.get_domain(u) != domain:
-                    if ONION_PAT.match(u):
-                        external_links_tor.append(u)
-                    else:
-                        external_links_web.append(u)
-            item['external_links_tor'] = external_links_tor
-            item['external_links_web'] = external_links_web
+            item["scheme"] = self.helper.get_scheme(url)
+            item['title'] = soup_rendered.title.string.strip() \
+                if soup_rendered.title and soup_rendered.title.string else ""
+            item['scheme'] = scheme
+            item["homepage"] = self.helper.is_home_page(requested_url)
+            item['urls'] = urls
+            item["version"] = 3 if len(domain.replace(".onion", "")) > 16 else 2
+            item["response_header"] = headers
+            item["btc"] = self.helper.get_btc(soup_rendered)
+            item["rendered_page"] = rendered_page
+            item["raw_page"] = raw_page
+            item["raw_md5"] = hashlib.md5(raw_page.encode('utf-8')).hexdigest(),
+            item["js"] = [str(x) for x in soup_rendered.find_all('script')]
+            item["css"] = [str(x) for x in soup_rendered.find_all('style')]
+            item["screenshot"] = base64.b64decode(response.data['jpeg'])
+            item["js_files"] = js_files
+            item["css_files"] = css_files
+
+            if redirect_status["redirect_type"]:
+                item["redirect"] = {
+                    "url": redirect_status["redirect_to"],
+                    "type": redirect_status["redirect_type"]
+                }
 
             yield item
 
-            external_domains = set()
-            if ONION_PAT.match(response.url):
-                for u in sorted(url_links):
-                    domain_count = self.server.scard(domain_key)
-                    if domain_count >= 30:
-                        break
-                    if ONION_PAT.match(u) and u != url:
-                        u = u.replace("onion.link", "onion")
-                        u = u.replace("onion.pet", "onion")
-                        u = u.replace("onion.ws", "onion")
-                        if self.helper.get_domain(u) == domain:
-                            self.server.sadd(domain_key, u)
-                            yield scrapy.Request(u, dont_filter=False, callback=self.parse, errback=self.handle_error)
-                        else:
-                            external_domains.add(self.helper.unify(self.helper.get_domain(u)))
-            external_domains = list(external_domains)
+            for u in sorted(urls["internal"]["anchor"]):
+                domain_count = self.server.scard(domain_key)
+                if domain_count >= 30:
+                    break
+                if ONION_PAT.match(u) and u != url and self.helper.get_domain(u) == domain:
+                    self.server.sadd(domain_key, u)
+                    yield TorHelper.build_splash_request(u, callback=self.parse)
+
+            external_domains_http = [self.helper.unify(self.helper.get_domain(u), "http") for u in
+                                     urls["external"]["anchor"]]
+            external_domains_https = [self.helper.unify(self.helper.get_domain(u), "https") for u in
+                                      urls["external"]["anchor"]]
+            external_domains = [*external_domains_http, *external_domains_https]
             if len(external_domains) > 0:
                 self.server.lpush('sup-darkweb-crawler:start_urls', *external_domains)
-
-    def handle_error(self, failure):
-        self.logger.debug(repr(failure))
-        if failure.check(HttpError):
-            response = failure.value.response
-            self.logger.error('HttpError on %s', response.url)
-        elif failure.check(DNSLookupError):
-            request = failure.request
-            self.logger.error('DNSLookupError on %s', request.url)
-        elif failure.check(TimeoutError):
-            request = failure.request
-            self.logger.error('TimeoutError on %s', request.url)
-
-    '''
-    def get_start_urls(self):
-        domains = self.es.get_domains()
-        return [self.helper.unify(domain) for domain in domains]
-    '''

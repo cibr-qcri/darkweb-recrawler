@@ -38,6 +38,7 @@ SITE_DEPTH_LIMIT = 50
 
 ENABLE_BDB_SEARCH = True
 
+METAREFRESH_ENABLED = False
 
 # An integer that is used to adjust the request priority based on its depth:
 # if zero (default), no priority adjustment is made from depth
@@ -53,7 +54,7 @@ SCHEDULER_PERSIST = True
 SCHEDULER_QUEUE_CLASS = 'scrapy_redis.queue.SpiderQueue'
 
 # Ensure all spiders share same duplicates filter through redis.
-DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"
+DUPEFILTER_CLASS = 'darkweb-recrawler.dupefilter.CustomRFPDupeFilter'
 
 # Refresh tor every hour
 # must provide Tor HashedControlPassword
@@ -111,14 +112,16 @@ CONCURRENT_REQUESTS = 5
 
 # Enable or disable spider middlewares
 # See https://doc.scrapy.org/en/latest/topics/spider-middleware.html
-# SPIDER_MIDDLEWARES = {
-#    'darkweb-recrawler.middlewares.TorspiderSpiderMiddleware': 543,
-# }
+SPIDER_MIDDLEWARES = {
+   'scrapy_splash.SplashDeduplicateArgsMiddleware': 100,
+}
 
 # Enable or disable downloader middlewares
 # See https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-    'darkweb-recrawler.middlewares.TorspiderDownloaderMiddleware': 543,
+    'scrapy_splash.SplashCookiesMiddleware': 723,
+    'scrapy_splash.SplashMiddleware': 725,
+    'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware': 810,
 }
 
 # Enable or disable extensions
@@ -130,12 +133,9 @@ DOWNLOADER_MIDDLEWARES = {
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'darkweb-recrawler.pipelines.TorspiderPipeline': 300
+    'darkweb-recrawler.pipelines.FileWriterPipeline': 300,
+    'darkweb-recrawler.pipelines.ElasticsearchPipeline': 301
 }
-
-# ITEM_PIPELINES = {
-# 'darkweb-recrawler.pipelines.TorspiderPipeline': 300,
-# }
 
 # REDIS_URL = "redis://"
 
@@ -211,8 +211,12 @@ USER_AGENT = [
     "Mozilla/5.0 (X11; U; Linux x86_64; zh-CN; rv:1.9.2.10) Gecko/20100922 Ubuntu/10.10 (maverick) Firefox/3.6.10",
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
 ]
-ELASTICSEARCH_CLIENT_SERVICE_HOST = os.getenv('ELASTICSEARCH_MASTER_SERVICE_HOST')
-ELASTICSEARCH_CLIENT_SERVICE_PORT = os.getenv('ELASTICSEARCH_MASTER_SERVICE_PORT')
-ELASTICSEARCH_USERNAME = 'elastic'
-ELASTICSEARCH_PASSWORD = 'changeme'
-ELASTICSEARCH_INDEX = 'recrawlers'
+ELASTICSEARCH_CLIENT_SERVICE_HOST = os.getenv('ELASTICSEARCH7_MASTER_SERVICE_HOST')
+ELASTICSEARCH_CLIENT_SERVICE_PORT = os.getenv('ELASTICSEARCH7_MASTER_SERVICE_PORT')
+ELASTICSEARCH_INDEX = 'darkweb-tor-recrawler'
+
+SPLASH_SERVICE_HOST = os.getenv('SPLASH_SERVICE_HOST')
+SPLASH_SERVICE_PORT = os.getenv('SPLASH_SERVICE_PORT')
+
+TOR_PROXY_HOST = os.getenv('TOR_PROXY_SERVICE_HOST')
+TOR_PROXY_PORT = os.getenv('TOR_PROXY_SERVICE_PORT')
