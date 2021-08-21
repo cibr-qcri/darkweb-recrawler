@@ -401,5 +401,5 @@ class TorHelper:
     def build_splash_request(url, callback=None, wait=10, to=None, type=None):
         args = {'lua_source': TorHelper.get_lua_script(), "redirect": wait, "redirect_to": to, "redirect_type": type}
 
-        request = SplashRequest(url, callback, args, endpoint='execute')
+        request = SplashRequest(url, method='POST', callback=callback, args=args, endpoint='execute')
         return request
