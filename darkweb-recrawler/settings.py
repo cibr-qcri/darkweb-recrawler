@@ -133,8 +133,7 @@ DOWNLOADER_MIDDLEWARES = {
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'darkweb-recrawler.pipelines.FileWriterPipeline': 300,
-    'darkweb-recrawler.pipelines.ElasticsearchPipeline': 301
+    'darkweb-recrawler.pipelines.TorPipeline': 300
 }
 
 # REDIS_URL = "redis://"
