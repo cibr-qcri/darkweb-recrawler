@@ -390,7 +390,7 @@ class TorHelper:
                             redirect_status = {
                                 redirect_type = args.redirect_type, 
                                 redirect_to = args.redirect_to
-                            }
+                            },
                             http_redirects = requests,
                             history = splash:history(),
                             rendered = splash:html(), 
