@@ -15,7 +15,7 @@ from scrapy_splash import SplashRequest
 from socks import GeneralProxyError
 from urllib3.exceptions import MaxRetryError
 
-from es7 import ES7
+from .es7 import ES7
 
 request_count = dict()
 
