@@ -364,6 +364,8 @@ class TorHelper:
                         end)
 
                         requests = {}
+                        js = {}
+                        css = {}
                         splash:on_response(function(response)
                             request_accept_type = response.request.headers['Accept']
                             s = response.status
@@ -387,12 +389,14 @@ class TorHelper:
                         return {
                             redirect_status = {
                                 redirect_type = args.redirect_type, 
-                                "redirect_to" = args.redirect_to
+                                redirect_to = args.redirect_to
                             }
                             http_redirects = requests,
                             history = splash:history(),
                             rendered = splash:html(), 
                             jpeg = splash:jpeg(),
+                            css = css,
+                            js = js
                         }
                     end
                     """
