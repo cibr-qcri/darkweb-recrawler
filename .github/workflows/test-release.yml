@@ -24,7 +24,7 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v2
         with:
-          tags: toshiqcri/darkweb-recrawler:0.0.0
+          tags: toshiqcri/darkweb-tor-recrawler:0.0.0
           push: true
   publish_helm_charts:
     name: Publish Helm Charts
