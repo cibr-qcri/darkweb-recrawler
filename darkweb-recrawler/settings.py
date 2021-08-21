@@ -54,7 +54,7 @@ SCHEDULER_PERSIST = True
 SCHEDULER_QUEUE_CLASS = 'scrapy_redis.queue.SpiderQueue'
 
 # Ensure all spiders share same duplicates filter through redis.
-DUPEFILTER_CLASS = 'darkweb-recrawler.dupefilter.CustomRFPDupeFilter'
+# DUPEFILTER_CLASS = 'darkweb-recrawler.dupefilter.CustomRFPDupeFilter'
 
 # Refresh tor every hour
 # must provide Tor HashedControlPassword
