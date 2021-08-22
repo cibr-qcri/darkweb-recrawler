@@ -63,7 +63,7 @@ class TorPipeline(object):
         if len(js) > 0:
             for js_url, content in js.items():
                 js_url_hash = sha256(js_url.encode("utf-8")).hexdigest()
-                js_path = "{js}/{index}.js".format(js=js_dir, index=js_url_hash)
+                js_path = "{js}/{index}".format(js=js_dir, index=js_url_hash)
                 js_paths.append(js_path)
                 with open("{root}/{js}".format(root=root_dir, js=js_path), encoding="utf-8", mode="w",
                           errors='ignore') as f:
@@ -71,13 +71,13 @@ class TorPipeline(object):
         if len(css) > 0:
             for css_url, content in css.items():
                 css_url_hash = sha256(css_url.encode("utf-8")).hexdigest()
-                css_path = "{css}/{index}.css".format(css=css_dir, index=css_url_hash)
+                css_path = "{css}/{index}".format(css=css_dir, index=css_url_hash)
                 css_paths.append(css_path)
                 with open("{root}/{css}".format(root=root_dir, css=css_path), encoding="utf-8", mode="w",
                           errors='ignore') as f:
                     f.write(content)
 
-        item["page"] = {
+        return {
             "raw_md5": item["raw_md5"],
             "css": item["css"] or len(css) > 0,
             "js": item["js"] or len(js) > 0,
@@ -88,8 +88,6 @@ class TorPipeline(object):
                 "js": js_paths,
                 "css": css_paths,
             }}
-
-        return item
 
     def process_item(self, item, spider):
         url = item["url"]
