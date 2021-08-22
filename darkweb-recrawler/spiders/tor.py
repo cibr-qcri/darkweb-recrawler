@@ -56,7 +56,7 @@ class TorSpider(RedisSpider):
 
         headers = dict()
         for entry in last_response["headers"]:
-            headers[entry["name"]] = entry["value"]
+            headers[entry["name"].lower()] = entry["value"]
 
         soup_rendered = BeautifulSoup(rendered_page, "lxml")
         urls = self.helper.extract_all_urls(url, domain, scheme, soup_rendered)
