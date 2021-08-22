@@ -356,34 +356,36 @@ class TorHelper:
                     treat = require("treat")
 
                     function main(splash, args)
+                        splash:set_user_agent('Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0')
                         splash:on_request(function(request)
-                            accept_type = request.headers['Accept']
-                            if string.find(accept_type, "text/html") then
-                                request:enable_response_body()
-                            end
+                            request:enable_response_body()
                         end)
 
                         requests = {}
-                        js = {}
-                        css = {}
+                        js_files = {}
+                        css_files = {}
                         splash:on_response(function(response)
                             request_accept_type = response.request.headers['Accept']
+                            response_accept_type = response.headers['Content-Type']
                             s = response.status
                             if string.find(request_accept_type, "text/html") and s > 300 and s <= 308 then
                                 requests[response.request.url] = response.headers
                             end
-                            if string.find(request_accept_type, "text/css")  and s >= 200 and s <= 203 then
-                               js[response.request.url] = treat.as_string(response.body)
+                            if string.find(response_accept_type, "application/javascript")  and s >= 200 and s <= 203 then
+                               js_files[response.request.url] = treat.as_string(response.body)
                             end
-                            if string.find(request_accept_type, "text/javascript") and s >= 200 and s <= 203 then
-                               css[response.request.url] = treat.as_string(response.body)
+                            if string.find(response_accept_type, "text/javascript")  and s >= 200 and s <= 203 then
+                               js_files[response.request.url] = treat.as_string(response.body)
+                            end
+                            if string.find(response_accept_type, "text/css") and s >= 200 and s <= 203 then
+                               css_files[response.request.url] = treat.as_string(response.body)
                             end
                         end)
 
-                        assert(splash:with_timeout(function()
-                            assert(splash:go(args.url))
-                            assert(splash:wait(args.redirect))
-                        end, 130))
+                        splash:with_timeout(function()
+                            splash:go(args.url)
+                            splash:wait(args.redirect)
+                        end, 130)
                         splash:set_viewport_full()
 
                         return {
@@ -395,8 +397,8 @@ class TorHelper:
                             history = splash:history(),
                             rendered = splash:html(), 
                             jpeg = splash:jpeg(),
-                            css = css,
-                            js = js
+                            css = css_files,
+                            js = js_files
                         }
                     end
                     """

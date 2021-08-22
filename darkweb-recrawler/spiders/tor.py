@@ -25,7 +25,7 @@ class TorSpider(RedisSpider):
         self.domain_count = dict()
 
     def make_requests_from_url(self, url):
-        yield TorHelper.build_splash_request(url, callback=self.parse)
+        return TorHelper.build_splash_request(url, callback=self.parse)
 
     def parse(self, response):
         history = response.data['history']
@@ -81,13 +81,13 @@ class TorSpider(RedisSpider):
             item["rendered_page"] = rendered_page
             item["raw_page"] = raw_page
             item["raw_md5"] = hashlib.md5(raw_page.encode('utf-8')).hexdigest(),
-            item["js"] = [str(x) for x in soup_rendered.find_all('script')]
-            item["css"] = [str(x) for x in soup_rendered.find_all('style')]
+            item["js"] = len(soup_rendered.find_all('script')) > 0
+            item["css"] = len(soup_rendered.find_all('style')) > 0
             item["screenshot"] = base64.b64decode(response.data['jpeg'])
             item["js_files"] = js_files
             item["css_files"] = css_files
 
-            if redirect_status["redirect_type"]:
+            if "redirect_type" in redirect_status and redirect_status["redirect_type"]:
                 item["redirect"] = {
                     "url": redirect_status["redirect_to"],
                     "type": redirect_status["redirect_type"]
