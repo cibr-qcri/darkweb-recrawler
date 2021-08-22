@@ -58,7 +58,7 @@ class TorPipeline(object):
                 f.write(raw_page)
         if screenshot:
             screenshot_path = "{base}/screenshot.jpeg".format(base=base_dir)
-            with open("{root}/{path}".format(root=root_dir, path=screenshot_path), mode="wb", errors='ignore') as f:
+            with open("{root}/{path}".format(root=root_dir, path=screenshot_path), mode="wb") as f:
                 f.write(screenshot)
         if len(js) > 0:
             for i in range(len(js)):
