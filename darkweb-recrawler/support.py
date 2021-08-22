@@ -123,14 +123,12 @@ class TorHelper:
 
     @staticmethod
     def get_all_btc(btc_addresses):
-        addresses = dict()
+        addresses = list()
         for item in btc_addresses:
             address = item["address"]
-            entry = {"xpath": item["xpath"], "text": item["text"]}
-            if address in addresses:
-                addresses[address].append(entry)
-            else:
-                addresses[address] = [entry]
+            entry = {"address": address, "xpath": item["xpath"], "text": item["text"]}
+            addresses.append(entry)
+
         return addresses
 
     @staticmethod
