@@ -1,9 +1,7 @@
-import hashlib
-
 from scrapy_redis.dupefilter import RFPDupeFilter
+from scrapy_splash.dupefilter import splash_request_fingerprint
 
 
 class CustomRFPDupeFilter(RFPDupeFilter):
     def request_fingerprint(self, request):
-        url = request.url
-        return hashlib.sha1(url.encode("utf-8")).hexdigest()
+        return splash_request_fingerprint(request)

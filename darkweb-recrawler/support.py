@@ -165,7 +165,7 @@ class TorHelper:
                         {"address": address, "xpath": self.get_node_xpath(element),
                          "text": TorHelper.get_element_text(element, address)})
 
-        for element in soup.find_all('a'):
+        for element in soup.find_all('a', href=True):
             url = element["href"]
             domain = urlparse(url).netloc
             if '127.0.0.1' in domain or 'localhost' in domain or '0.0.0.0' in domain:
@@ -402,7 +402,7 @@ class TorHelper:
                     """
 
     @staticmethod
-    def build_splash_request(url, callback=None, wait=10, to=None, type=None):
+    def build_splash_request(url, callback=None, wait=10, to='', type=''):
         args = {'lua_source': TorHelper.get_lua_script(), "redirect": wait, "redirect_to": to, "redirect_type": type}
 
         request = SplashRequest(url, method='POST', callback=callback, args=args, endpoint='execute')

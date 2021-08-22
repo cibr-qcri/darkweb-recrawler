@@ -29,6 +29,8 @@ class TorSpider(RedisSpider):
 
     def parse(self, response):
         history = response.data['history']
+        if len(history) == 0:
+            return
         last_response = history[-1]["response"]
         redirect_status = response.data['redirect_status']
 
