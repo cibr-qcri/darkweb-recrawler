@@ -25,7 +25,7 @@ class TorHelper:
     def __init__(self):
         settings = get_project_settings()
         self.proxy_host = settings.get("TOR_PROXY_HOST")
-        self.proxy_port = settings.get("TOR_PROXY_PORT")
+        self.proxy_port = int(settings.get("TOR_PROXY_PORT"))
         self.es = ES7()
 
     @staticmethod
