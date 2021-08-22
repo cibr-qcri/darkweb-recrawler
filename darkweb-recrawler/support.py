@@ -311,10 +311,10 @@ class TorHelper:
             certificate = ssl.DER_cert_to_PEM_cert(ss.getpeercert(True))
             ss.close()
         except (GeneralProxyError, SSLError) as e:
-            pass
+            return {"pem": certificate, "valid": False}
 
         try:
-            requests.get(url, verify=True, proxies={'https': 'socks5://{0}:{1}'
+            requests.get(url.replace("http:", "https:", 1), verify=True, proxies={"https": "socks5://{0}:{1}"
                          .format(self.proxy_host, self.proxy_port)}, allow_redirects=False)
             is_valid = True
         except (SSLError, MaxRetryError) as e:

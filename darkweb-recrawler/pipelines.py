@@ -93,6 +93,7 @@ class TorPipeline(object):
         url = item["url"]
         domain = item["domain"]
         page_info = TorPipeline.write_files(item)
+        is_homepage = item["homepage"]
 
         tag = {
             "timestamp": int(datetime.now().timestamp() * 1000),
@@ -103,7 +104,7 @@ class TorPipeline(object):
             "info": {
                 "version": item["version"],
                 "response_header": item["response_header"],
-                "homepage": item["homepage"],
+                "homepage": is_homepage,
                 "domain": domain,
                 "url": url,
                 "scheme": item["scheme"],
@@ -114,7 +115,8 @@ class TorPipeline(object):
             "page": page_info
         }
 
-        if item["scheme"] == "https":
+        cert_info = self.helper.get_tls_cert(domain, url)
+        if is_homepage and cert_info["pem"]:
             tag["info"]["tls_cert"] = self.helper.get_tls_cert(domain, url)
 
         self.es.persist_report({"data": tag}, self.helper.get_esid(url))
