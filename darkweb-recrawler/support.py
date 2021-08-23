@@ -314,10 +314,10 @@ class TorHelper:
             return {"pem": certificate, "valid": False}
 
         try:
-            requests.get(url.replace("http:", "https:", 1), verify=True, proxies={"https": "socks5://{0}:{1}"
+            requests.get(url.replace("http:", "https:", 1), verify=True, proxies={"https": "socks5h://{0}:{1}"
                          .format(self.proxy_host, self.proxy_port)}, allow_redirects=False)
             is_valid = True
-        except (SSLError, MaxRetryError) as e:
+        except (requests.exceptions.SSLError, MaxRetryError) as e:
             pass
 
         return {"pem": certificate, "valid": is_valid}

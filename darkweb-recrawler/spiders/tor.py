@@ -32,6 +32,8 @@ class TorSpider(RedisSpider):
         if len(history) == 0:
             return
         last_response = history[-1]["response"]
+        if last_response["status"] >= 400:
+            return
         redirect_status = response.data['redirect_status']
 
         requested_url = response.url.strip("/")
@@ -95,7 +97,6 @@ class TorSpider(RedisSpider):
 
             yield item
 
-            '''
             for u in sorted(urls["internal"]["anchor"]):
                 domain_count = self.server.scard(domain_key)
                 if domain_count >= 30:
@@ -111,4 +112,3 @@ class TorSpider(RedisSpider):
             external_domains = [*external_domains_http, *external_domains_https]
             if len(external_domains) > 0:
                 self.server.lpush('sup-darkweb-crawler:start_urls', *external_domains)
-            '''
