@@ -97,6 +97,7 @@ class TorSpider(RedisSpider):
 
             yield item
 
+            '''
             for u in sorted(urls["internal"]["anchor"]):
                 domain_count = self.server.scard(domain_key)
                 if domain_count >= 30:
@@ -112,3 +113,4 @@ class TorSpider(RedisSpider):
             external_domains = [*external_domains_http, *external_domains_https]
             if len(external_domains) > 0:
                 self.server.lpush('sup-darkweb-crawler:start_urls', *external_domains)
+            '''
