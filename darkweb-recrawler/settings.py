@@ -88,7 +88,7 @@ NEWSPIDER_MODULE = 'darkweb-recrawler.spiders'
 # ROBOTSTXT_OBEY = True
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-CONCURRENT_REQUESTS = 5
+# CONCURRENT_REQUESTS = 5
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://doc.scrapy.org/en/latest/topics/settings.html#download-delay
@@ -212,7 +212,7 @@ USER_AGENT = [
 ]
 ELASTICSEARCH_CLIENT_SERVICE_HOST = os.getenv('ELASTICSEARCH7_MASTER_SERVICE_HOST')
 ELASTICSEARCH_CLIENT_SERVICE_PORT = os.getenv('ELASTICSEARCH7_MASTER_SERVICE_PORT')
-ELASTICSEARCH_INDEX = 'darkweb-tor-recrawler'
+ELASTICSEARCH_INDEX = 'darkweb-recrawler'
 ELASTICSEARCH_USERNAME = 'elastic'
 ELASTICSEARCH_PASSWORD = 'changeme'
 

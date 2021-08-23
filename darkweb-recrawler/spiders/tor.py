@@ -56,9 +56,7 @@ class TorSpider(RedisSpider):
         rendered_page = response.data["rendered"]
         raw_page = str(base64.b64decode(last_response["content"]["text"]))
 
-        headers = dict()
-        for entry in last_response["headers"]:
-            headers[entry["name"].lower()] = entry["value"]
+        headers = [{"key": entry["name"], "value": entry["value"]} for entry in last_response["headers"]]
 
         soup_rendered = BeautifulSoup(rendered_page, "lxml")
         urls = self.helper.extract_all_urls(url, domain, scheme, soup_rendered)
@@ -97,6 +95,7 @@ class TorSpider(RedisSpider):
 
             yield item
 
+            '''
             for u in sorted(urls["internal"]["anchor"]):
                 domain_count = self.server.scard(domain_key)
                 if domain_count >= 30:
@@ -112,3 +111,4 @@ class TorSpider(RedisSpider):
             external_domains = [*external_domains_http, *external_domains_https]
             if len(external_domains) > 0:
                 self.server.lpush('sup-darkweb-crawler:start_urls', *external_domains)
+            '''
