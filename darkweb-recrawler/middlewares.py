@@ -102,10 +102,12 @@ class TorspiderDownloaderMiddleware(object):
         #     raise scrapy.exceptions.IgnoreRequest
 
         s = attrgetter("_cached_ubody")(response)
-        history = json.loads(s)["history"]
+        s = json.loads(s)
 
-        if not history or history[-1]["response"]["status"] >= 400:
-            raise scrapy.exceptions.IgnoreRequest
+        if "history" in s:
+            history = s["history"]
+            if not history or history[-1]["response"]["status"] >= 400:
+                raise scrapy.exceptions.IgnoreRequest
 
         return response
 

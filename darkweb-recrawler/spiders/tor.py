@@ -37,11 +37,6 @@ class TorSpider(RedisSpider):
         scheme = self.helper.get_scheme(url)
         domain = self.helper.get_domain(url)
 
-        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-        print(url)
-        print(requested_url)
-        print(self.helper.is_home_page(requested_url))
-
         '''
         http_redirect, other_redirect = self.helper \
             .build_redirect_paths(history, response.data["http_redirects"], requested_url, url)
@@ -94,11 +89,13 @@ class TorSpider(RedisSpider):
             item["js_files"] = js_files
             item["css_files"] = css_files
 
+            '''
             if "redirect_type" in redirect_status and redirect_status["redirect_type"]:
                 item["redirect"] = {
                     "url": redirect_status["redirect_to"],
                     "type": redirect_status["redirect_type"]
                 }
+            '''
 
             yield item
 
