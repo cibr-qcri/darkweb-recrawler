@@ -1,12 +1,13 @@
+import json
 import os
-import random
+from operator import attrgetter
 
 import scrapy
 from scrapy import signals
 
 from .support import TorHelper
 
-http_proxy = "http://" + os.getenv("TOR_PROXY_SERVICE_HOST")+":8118"
+http_proxy = "http://" + os.getenv("TOR_PROXY_SERVICE_HOST") + ":8118"
 ignore_type = (".png", ".jpg", ".jpeg", ".gif", ".pdf", ".zip", ".gz", ".rar", ".deb", ".wav", ".mp4", ".zip", ".mp3",
                ".gz", ".rar", ".sig", ".epub", ".xz")
 request_count = {}
@@ -87,24 +88,6 @@ class TorspiderDownloaderMiddleware(object):
         # - or raise IgnoreRequest: process_exception() methods of
         #   installed downloader middleware will be called
 
-        if request.url.lower().endswith(ignore_type):
-            raise scrapy.exceptions.IgnoreRequest
-
-        '''
-        if ".onion.pet" in request.url:
-            return None
-        '''
-        if ".onion" in request.url:
-            request.meta['proxy'] = http_proxy
-            '''
-            url = request.url.replace('.onion', '.onion.pet')
-            request = request.replace(url=url)
-            '''
-            agent = random.choice(self.user_agent)
-            request.headers['User-Agent'] = agent
-
-            # return request
-
         return None
 
     def process_response(self, request, response, spider):
@@ -117,11 +100,12 @@ class TorspiderDownloaderMiddleware(object):
         # if b"Content-Type" not in response.headers or b"text/html" not in response.headers[b"Content-Type"] :
         #     self.time_log.pop(request.url)
         #     raise scrapy.exceptions.IgnoreRequest
-        '''
-        if ".onion.pet" in response.url:
-            url = response.url.replace('.onion.pet', '.onion')
-            response = response.replace(url=url)
-        '''
+
+        s = attrgetter("_cached_ubody")(response)
+        history = json.loads(s)["history"]
+
+        if not history or history[-1]["response"]["status"] >= 400:
+            raise scrapy.exceptions.IgnoreRequest
 
         return response
 
@@ -133,6 +117,7 @@ class TorspiderDownloaderMiddleware(object):
         # - return None: continue processing this exception
         # - return a Response object: stops process_exception() chain
         # - return a Request object: stops process_exception() chain
+
         return None
 
     def spider_opened(self, spider):

@@ -29,11 +29,7 @@ class TorSpider(RedisSpider):
 
     def parse(self, response):
         history = response.data['history']
-        if len(history) == 0:
-            return
         last_response = history[-1]["response"]
-        if last_response["status"] >= 400:
-            return
         redirect_status = response.data['redirect_status']
 
         requested_url = response.url.strip("/")
@@ -41,19 +37,28 @@ class TorSpider(RedisSpider):
         scheme = self.helper.get_scheme(url)
         domain = self.helper.get_domain(url)
 
+        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+        print(url)
+        print(requested_url)
+        print(self.helper.is_home_page(requested_url))
+
+        '''
         http_redirect, other_redirect = self.helper \
             .build_redirect_paths(history, response.data["http_redirects"], requested_url, url)
         self.helper.persist_http_redirects(http_redirect)
+        '''
 
         js_files = response.data["js"]
         css_files = response.data["css"]
 
+        '''
         for rurl, meta in other_redirect.items():
             if meta["type"] == "meta":
                 yield TorHelper\
                     .build_splash_request(rurl, callback=self.parse, wait=meta["wait"], to=meta["to"], type="meta")
             else:
                 yield TorHelper.build_splash_request(rurl, callback=self.parse, to=meta["to"], type="js")
+        '''
 
         rendered_page = response.data["rendered"]
         raw_page = str(base64.b64decode(last_response["content"]["text"]))
@@ -112,5 +117,5 @@ class TorSpider(RedisSpider):
                                       urls["external"]["anchor"]]
             external_domains = [*external_domains_http, *external_domains_https]
             if len(external_domains) > 0:
-                self.server.lpush('sup-darkweb-crawler:start_urls', *external_domains)
+                self.server.lpush('darkweb-crawler:start_urls', *external_domains)
             '''

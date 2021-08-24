@@ -31,7 +31,7 @@ RETRY_ENABLED = False
 
 # Timeout for processing of DNS queries in seconds. Float is supported.
 # DNS_TIMEOUT = 500
-DOWNLOAD_TIMEOUT = 150
+DOWNLOAD_TIMEOUT = 250
 
 # Depth limit for pages to the homepage of its site
 SITE_DEPTH_LIMIT = 50
@@ -122,6 +122,7 @@ DOWNLOADER_MIDDLEWARES = {
     'scrapy_splash.SplashCookiesMiddleware': 723,
     'scrapy_splash.SplashMiddleware': 725,
     'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware': 810,
+    'darkweb-recrawler.middlewares.TorspiderDownloaderMiddleware': 820
 }
 
 # Enable or disable extensions

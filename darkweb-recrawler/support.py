@@ -323,7 +323,7 @@ class TorHelper:
         return {"pem": certificate, "valid": is_valid}
 
     def persist_http_redirects(self, http_redirect):
-        for url, header in http_redirect:
+        for url, header in http_redirect.items():
             if self.get_onion_pattern().match(url):
                 tag = {"timestamp": int(datetime.now().timestamp() * 1000), "type": "recrawl", "source": "tor",
                        "method": "html", "version": 2,
@@ -383,7 +383,7 @@ class TorHelper:
                         splash:with_timeout(function()
                             splash:go(args.url)
                             splash:wait(args.redirect)
-                        end, 130)
+                        end, 200)
                         splash:set_viewport_full()
 
                         return {
@@ -402,7 +402,7 @@ class TorHelper:
                     """
 
     @staticmethod
-    def build_splash_request(url, callback=None, wait=10, to='', type=''):
+    def build_splash_request(url, callback=None, wait=15, to='', type=''):
         args = {'lua_source': TorHelper.get_lua_script(), "redirect": wait, "redirect_to": to, "redirect_type": type}
 
         request = SplashRequest(url, method='POST', callback=callback, args=args, endpoint='execute')
