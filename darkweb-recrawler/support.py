@@ -403,7 +403,7 @@ class TorHelper:
 
     @staticmethod
     def build_splash_request(url, callback=None, wait=15, to='', type=''):
-        args = {'lua_source': TorHelper.get_lua_script(), 'timeout': 200, "redirect": wait, "redirect_to": to,
+        args = {'lua_source': TorHelper.get_lua_script(), 'timeout': 60, "redirect": wait, "redirect_to": to,
                 "redirect_type": type}
 
         request = SplashRequest(url, method='POST', callback=callback, args=args, endpoint='execute')
