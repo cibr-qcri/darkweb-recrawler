@@ -62,6 +62,7 @@ class TorSpider(RedisSpider):
         if ONION_PAT.match(url):
             domain_key = domain.replace('.onion', '')
             self.server.sadd(domain_key, url)
+            self.server.sadd("domains", domain_key)
 
             item = TorspiderItem()
             item["date"] = datetime.today()
