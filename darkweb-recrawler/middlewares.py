@@ -101,13 +101,20 @@ class TorspiderDownloaderMiddleware(object):
         #     self.time_log.pop(request.url)
         #     raise scrapy.exceptions.IgnoreRequest
 
-        s = attrgetter("_cached_ubody")(response)
-        s = json.loads(s)
+        s = attrgetter("_body")(response)
+        body = json.loads(s)
 
-        if "history" in s:
-            history = s["history"]
-            if not history or history[-1]["response"]["status"] >= 400:
-                raise scrapy.exceptions.IgnoreRequest
+        if "history" not in body or len(body["history"]) == 0:
+            raise scrapy.exceptions.IgnoreRequest
+
+        history = body["history"]
+        last_response = history[-1]["response"]
+
+        if "content" not in last_response or "text" not in last_response["content"]:
+            raise scrapy.exceptions.IgnoreRequest
+
+        if last_response["status"] >= 400:
+            raise scrapy.exceptions.IgnoreRequest
 
         return response
 

@@ -364,19 +364,18 @@ class TorHelper:
                         css_files = {}
                         splash:on_response(function(response)
                             request_accept_type = response.request.headers['Accept']
-                            response_accept_type = response.headers['Content-Type']
+                            response_accept_type = string.lower(response.headers['Content-Type'])
                             s = response.status
-                            if string.find(request_accept_type, "text/html") and s > 300 and s <= 308 then
+                            file_extension = response.request.url:match("//[^/]+/.-(%.[^/]+)")
+                            
+                            if s > 300 and s <= 308 and string.find(request_accept_type, "text/html") then
                                 requests[response.request.url] = response.headers
-                            end
-                            if string.find(response_accept_type, "application/javascript")  and s >= 200 and s <= 203 then
-                               js_files[response.request.url] = treat.as_string(response.body)
-                            end
-                            if string.find(response_accept_type, "text/javascript")  and s >= 200 and s <= 203 then
-                               js_files[response.request.url] = treat.as_string(response.body)
-                            end
-                            if string.find(response_accept_type, "text/css") and s >= 200 and s <= 203 then
-                               css_files[response.request.url] = treat.as_string(response.body)
+                            elseif s >= 200 and s <= 203 then
+                                if string.find(response_accept_type, "script") or string.find(file_extension, ".js") then
+                                    js_files[response.request.url] = treat.as_string(response.body)
+                                elseif string.find(response_accept_type, "css") or string.find(file_extension, ".css") then
+                                    css_files[response.request.url] = treat.as_string(response.body)
+                                end
                             end
                         end)
 
