@@ -27,7 +27,7 @@ LOG_TIMEVAL = 60
 HTML_ON_OSS = True
 
 # If True, crawler will retry after a request failure.
-RETRY_ENABLED = False
+RETRY_ENABLED = True
 
 # Timeout for processing of DNS queries in seconds. Float is supported.
 # DNS_TIMEOUT = 500
