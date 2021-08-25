@@ -332,9 +332,9 @@ class TorHelper:
                        }
                 domain = self.get_domain(url)
                 scheme = self.get_scheme(url)
-                headers = dict()
-                for entry in header:
-                    headers[entry["name"]] = entry["value"]
+                headers = []
+                for key, value in header.items():
+                    headers.append({"key": key, "value": value})
                 tag["info"]["response_header"] = headers
                 tag["info"]["domain"] = domain
                 tag["info"]["version"] = 3 if len(domain.replace(".onion", "")) > 16 else 2
