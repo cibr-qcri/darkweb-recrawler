@@ -102,11 +102,12 @@ class TorspiderDownloaderMiddleware(object):
         #     self.time_log.pop(request.url)
         #     raise scrapy.exceptions.IgnoreRequest
 
+        if "dataloss" in response.flags:
+            spider.logger.error("Request URL:{0} failed due to data loss".format(response.url))
+            return response.request.retry(reason='Missing content')
+
         s = attrgetter("_body")(response)
-        try:
-            body = json.loads(s)
-        except JSONDecodeError as e:
-            return response
+        body = json.loads(s)
 
         if "history" not in body or len(body["history"]) == 0:
             raise scrapy.exceptions.IgnoreRequest

@@ -122,7 +122,8 @@ DOWNLOADER_MIDDLEWARES = {
     'scrapy_splash.SplashCookiesMiddleware': 723,
     'scrapy_splash.SplashMiddleware': 725,
     'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware': 810,
-    'darkweb-recrawler.middlewares.TorspiderDownloaderMiddleware': 820
+    'darkweb-recrawler.middlewares.TorspiderDownloaderMiddleware': 820,
+    'scrapy.downloadermiddlewares.retry.RetryMiddleware': 830
 }
 
 # Enable or disable extensions
@@ -228,3 +229,4 @@ TOR_PROXY_PORT = os.getenv('TOR_PROXY_SERVICE_PORT')
 REACTOR_THREADPOOL_MAXSIZE = 50
 DOWNLOAD_MAXSIZE = 0
 DOWNLOAD_WARNSIZE = 0
+DOWNLOAD_FAIL_ON_DATALOSS = False
