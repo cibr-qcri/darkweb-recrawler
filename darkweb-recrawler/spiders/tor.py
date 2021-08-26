@@ -30,26 +30,18 @@ class TorSpider(RedisSpider):
     def parse(self, response):
         history = response.data['history']
         last_response = history[-1]["response"]
-        redirect_status = response.data['redirect_status']
 
         requested_url = response.url.strip("/")
         url = last_response["url"].strip("/")
         scheme = self.helper.get_scheme(url)
         domain = self.helper.get_domain(url)
 
-        http_redirect, other_redirect = self.helper \
+        http_redirect, _ = self.helper \
             .build_redirect_paths(history, response.data["http_redirects"], requested_url, url)
         self.helper.persist_http_redirects(http_redirect)
 
         js_files = response.data["js"]
         css_files = response.data["css"]
-
-        for rurl, meta in other_redirect.items():
-            if meta["type"] == "meta":
-                yield TorHelper \
-                    .build_splash_request(rurl, callback=self.parse, wait=meta["wait"], to=meta["to"], type="meta")
-            else:
-                yield TorHelper.build_splash_request(rurl, callback=self.parse, to=meta["to"], type="js")
 
         rendered_page = response.data["rendered"]
         raw_page = str(base64.b64decode(last_response["content"]["text"]))
@@ -86,10 +78,10 @@ class TorSpider(RedisSpider):
             item["js_files"] = js_files
             item["css_files"] = css_files
 
-            if "redirect_type" in redirect_status and redirect_status["redirect_type"]:
+            if urls["external"]["meta"]:
                 item["redirect"] = {
-                    "url": redirect_status["redirect_to"],
-                    "type": redirect_status["redirect_type"]
+                    "url": urls["external"]["meta"][0],
+                    "type": "meta"
                 }
 
             yield item
@@ -102,10 +94,8 @@ class TorSpider(RedisSpider):
                     self.server.sadd(domain_key, u)
                     yield TorHelper.build_splash_request(u, callback=self.parse)
 
-            external_domains_anchor = [self.helper.unify(self.helper.get_domain(u), "http") for u in
-                                       urls["external"]["anchor"]]
-            external_domains_meta = [self.helper.unify(self.helper.get_domain(u), "http") for u in
-                                     urls["external"]["meta"]]
+            external_domains_anchor = [self.helper.get_domain(u) for u in urls["external"]["anchor"]]
+            external_domains_meta = [self.helper.get_domain(u) for u in urls["external"]["meta"]]
             external_domains = [*external_domains_anchor, *external_domains_meta]
             if len(external_domains) > 0:
                 self.server.lpush('darkweb-crawler:start_urls', *external_domains)

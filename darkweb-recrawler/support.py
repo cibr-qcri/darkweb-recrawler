@@ -327,7 +327,7 @@ class TorHelper:
             if self.get_onion_pattern().match(url):
                 tag = {"timestamp": int(datetime.now().timestamp() * 1000), "type": "recrawl", "source": "tor",
                        "method": "html", "version": 2,
-                       "info": {"response_header": {}, "domain": "", "version": "", "url": "",
+                       "info": {"response_header": {}, "domain": "", "version": "", "url": "", "homepage": False,
                                 "redirect": {"url": "", "method": "http"}}
                        }
                 domain = self.get_domain(url)
@@ -381,15 +381,11 @@ class TorHelper:
 
                         splash:with_timeout(function()
                             splash:go(args.url)
-                            splash:wait(args.redirect)
+                            splash:wait(args.wait)
                         end, 200)
                         splash:set_viewport_full()
 
                         return {
-                            redirect_status = {
-                                redirect_type = args.redirect_type, 
-                                redirect_to = args.redirect_to
-                            },
                             http_redirects = requests,
                             history = splash:history(),
                             rendered = splash:html(), 
@@ -401,9 +397,8 @@ class TorHelper:
                     """
 
     @staticmethod
-    def build_splash_request(url, callback=None, wait=15, to='', type=''):
-        args = {'lua_source': TorHelper.get_lua_script(), 'timeout': 200, "redirect": wait, "redirect_to": to,
-                "redirect_type": type}
+    def build_splash_request(url, callback=None, wait=15):
+        args = {'lua_source': TorHelper.get_lua_script(), 'timeout': 200, "wait": wait}
 
         request = SplashRequest(url, method='POST', callback=callback, args=args, endpoint='execute')
         return request

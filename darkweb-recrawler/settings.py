@@ -65,6 +65,7 @@ TOR_PASSWORD = ""
 DOMAIN_LIMIT_BASE = 50
 DOMAIN_LIMIT_RATE = 50
 
+DOWNLOAD_FAIL_ON_DATALOSS = False
 # If enabled, Scrapy will wait a random amount of time (between 0.5 * DOWNLOAD_DELAY and 1.5 * DOWNLOAD_DELAY) while
 # fetching requests from the same website.
 # DOWNLOAD_DELAY = 2

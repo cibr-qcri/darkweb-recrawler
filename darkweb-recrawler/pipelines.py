@@ -110,7 +110,9 @@ class TorPipeline(object):
                 "scheme": item["scheme"],
                 "title": item["title"],
                 "urls": item["urls"],
-                "cryptocurrency": item["btc"]
+                "cryptocurrency": {
+                    "btc": item["btc"]
+                }
             },
             "page": page_info
         }
