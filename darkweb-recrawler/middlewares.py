@@ -1,11 +1,12 @@
 import json
 import os
-from json.decoder import JSONDecodeError
 from operator import attrgetter
-from twisted.web.client import ResponseFailed
-from scrapy.downloadermiddlewares.retry import RetryMiddleware
+
 import scrapy
 from scrapy import signals
+from scrapy.downloadermiddlewares.retry import RetryMiddleware
+from scrapy.utils.project import get_project_settings
+from twisted.web.client import ResponseFailed
 
 from .support import TorHelper
 
@@ -69,9 +70,10 @@ class TorspiderDownloaderMiddleware(object):
     # passed objects.
 
     def __init__(self, user_agent):
+        settings = get_project_settings()
         self.user_agent = user_agent
         self.helper = TorHelper()
-        self.retry = RetryMiddleware()
+        self.retry = RetryMiddleware(settings)
 
     @classmethod
     def from_crawler(cls, crawler):

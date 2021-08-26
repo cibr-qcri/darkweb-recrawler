@@ -122,8 +122,7 @@ DOWNLOADER_MIDDLEWARES = {
     'scrapy_splash.SplashCookiesMiddleware': 723,
     'scrapy_splash.SplashMiddleware': 725,
     'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware': 810,
-    'darkweb-recrawler.middlewares.TorspiderDownloaderMiddleware': 820,
-    'scrapy.downloadermiddlewares.retry.RetryMiddleware': 830
+    'darkweb-recrawler.middlewares.TorspiderDownloaderMiddleware': 820
 }
 
 # Enable or disable extensions
