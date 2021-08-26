@@ -31,7 +31,7 @@ RETRY_ENABLED = True
 
 # Timeout for processing of DNS queries in seconds. Float is supported.
 # DNS_TIMEOUT = 500
-DOWNLOAD_TIMEOUT = 250
+DOWNLOAD_TIMEOUT = 500
 
 # Depth limit for pages to the homepage of its site
 SITE_DEPTH_LIMIT = 50
@@ -65,7 +65,6 @@ TOR_PASSWORD = ""
 DOMAIN_LIMIT_BASE = 50
 DOMAIN_LIMIT_RATE = 50
 
-DOWNLOAD_FAIL_ON_DATALOSS = False
 # If enabled, Scrapy will wait a random amount of time (between 0.5 * DOWNLOAD_DELAY and 1.5 * DOWNLOAD_DELAY) while
 # fetching requests from the same website.
 # DOWNLOAD_DELAY = 2
@@ -227,4 +226,5 @@ TOR_PROXY_HOST = os.getenv('TOR_PROXY_SERVICE_HOST')
 TOR_PROXY_PORT = os.getenv('TOR_PROXY_SERVICE_PORT')
 
 REACTOR_THREADPOOL_MAXSIZE = 50
-
+DOWNLOAD_MAXSIZE = 0
+DOWNLOAD_WARNSIZE = 0
