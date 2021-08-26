@@ -94,8 +94,10 @@ class TorSpider(RedisSpider):
                     self.server.sadd(domain_key, u)
                     yield TorHelper.build_splash_request(u, callback=self.parse)
 
-            external_domains_anchor = [self.helper.get_domain(u) for u in urls["external"]["anchor"]["tor"]]
-            external_domains_meta = [self.helper.get_domain(u) for u in urls["external"]["meta"]["tor"]]
+            external_domains_anchor = [self.helper.unify(self.helper.get_domain(u), "http") for u in
+                                       urls["external"]["anchor"]["tor"]]
+            external_domains_meta = [self.helper.unify(self.helper.get_domain(u), "http") for u in
+                                     urls["external"]["meta"]["tor"]]
             external_domains = [*external_domains_anchor, *external_domains_meta]
             if len(external_domains) > 0:
                 self.server.lpush('darkweb-crawler:start_urls', *external_domains)
