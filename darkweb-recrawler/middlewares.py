@@ -104,6 +104,9 @@ class TorspiderDownloaderMiddleware(object):
 
         if "dataloss" in response.flags:
             spider.logger.error("Request URL:{0} failed due to data loss".format(response.url))
+            print(vars(response.request))
+            print("######################")
+            print(vars(response))
             return response.request.retry(reason='Missing content')
 
         s = attrgetter("_body")(response)
