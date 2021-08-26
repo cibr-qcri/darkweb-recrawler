@@ -121,4 +121,7 @@ class TorPipeline(object):
         if is_homepage and cert_info["pem"]:
             tag["info"]["tls_cert"] = self.helper.get_tls_cert(domain, url)
 
+        if "redirect" in item:
+            tag["info"]["redirect"] = item["redirect"]
+
         self.es.persist_report({"data": tag}, self.helper.get_esid(url))

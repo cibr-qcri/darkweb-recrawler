@@ -231,8 +231,7 @@ class TorHelper:
 
         return base_url == url
 
-    @staticmethod
-    def build_redirect_paths(history, http_redirects, first_url, last_url):
+    def build_redirect_paths(self, history, http_redirects, first_url, last_url):
         http_redirects = dict((key.strip("/"), value) for key, value in http_redirects.items())
         redirect_urls = {}
         for res in history:
@@ -245,7 +244,9 @@ class TorHelper:
             if current_url in http_redirects:
                 headers = http_redirects[current_url]
                 http[current_url] = headers
-                current_url = headers["Location"].strip("/")
+                next_url = self.unify(urljoin(current_url, headers["Location"].strip("/")),
+                                      self.get_scheme(current_url))
+                current_url = next_url
             elif current_url in redirect_urls:
                 content = base64.b64decode(redirect_urls[current_url])
                 current_url = history[history_index]["request"]["url"].strip("/")

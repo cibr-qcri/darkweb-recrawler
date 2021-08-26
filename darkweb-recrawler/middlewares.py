@@ -107,7 +107,8 @@ class TorspiderDownloaderMiddleware(object):
         #     raise scrapy.exceptions.IgnoreRequest
 
         if "dataloss" in response.flags:
-            msg = "request URL:{0} failed due to data loss".format(response.url)
+            u = json.loads(attrgetter("_body")(request))["url"]
+            msg = "request url:{0} failed due to data loss".format(u)
             spider.logger.error(msg)
             return self.retry.process_exception(request, ResponseFailed(msg), spider)
 

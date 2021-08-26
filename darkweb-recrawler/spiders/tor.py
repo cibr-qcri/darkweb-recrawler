@@ -78,7 +78,7 @@ class TorSpider(RedisSpider):
             item["js_files"] = js_files
             item["css_files"] = css_files
 
-            if urls["external"]["meta"]["tor"]:
+            if len(urls["external"]["meta"]["tor"]) > 0:
                 item["redirect"] = {
                     "url": urls["external"]["meta"]["tor"][0],
                     "type": "meta"
@@ -90,7 +90,7 @@ class TorSpider(RedisSpider):
                 domain_count = self.server.scard(domain_key)
                 if domain_count >= 30:
                     break
-                if ONION_PAT.match(u) and u != url and self.helper.get_domain(u) == domain:
+                if ONION_PAT.match(u) and u != url:
                     self.server.sadd(domain_key, u)
                     yield TorHelper.build_splash_request(u, callback=self.parse)
 
