@@ -1,5 +1,6 @@
 import json
 import os
+from json.decoder import JSONDecodeError
 from operator import attrgetter
 
 import scrapy
@@ -102,7 +103,10 @@ class TorspiderDownloaderMiddleware(object):
         #     raise scrapy.exceptions.IgnoreRequest
 
         s = attrgetter("_body")(response)
-        body = json.loads(s)
+        try:
+            body = json.loads(s)
+        except JSONDecodeError as e:
+            return response
 
         if "history" not in body or len(body["history"]) == 0:
             raise scrapy.exceptions.IgnoreRequest
