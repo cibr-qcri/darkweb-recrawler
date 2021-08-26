@@ -2,7 +2,8 @@ import json
 import os
 from json.decoder import JSONDecodeError
 from operator import attrgetter
-
+from twisted.web.client import ResponseFailed
+from scrapy.downloadermiddlewares.retry import RetryMiddleware
 import scrapy
 from scrapy import signals
 
@@ -70,6 +71,7 @@ class TorspiderDownloaderMiddleware(object):
     def __init__(self, user_agent):
         self.user_agent = user_agent
         self.helper = TorHelper()
+        self.retry = RetryMiddleware()
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -103,13 +105,9 @@ class TorspiderDownloaderMiddleware(object):
         #     raise scrapy.exceptions.IgnoreRequest
 
         if "dataloss" in response.flags:
-            spider.logger.error("Request URL:{0} failed due to data loss".format(response.url))
-            print(vars(response))
-            print("$$$$$$$$$$$$$$$$$$$$$$")
-            print(vars(response.request))
-            print("######################")
-
-            return response.request.retry(reason='Missing content')
+            msg = "request URL:{0} failed due to data loss".format(response.url)
+            spider.logger.error(msg)
+            return self.retry.process_exception(request, ResponseFailed(msg), spider)
 
         s = attrgetter("_body")(response)
         body = json.loads(s)
