@@ -78,9 +78,9 @@ class TorSpider(RedisSpider):
             item["js_files"] = js_files
             item["css_files"] = css_files
 
-            if urls["external"]["meta"]:
+            if urls["external"]["meta"]["tor"]:
                 item["redirect"] = {
-                    "url": urls["external"]["meta"][0],
+                    "url": urls["external"]["meta"]["tor"][0],
                     "type": "meta"
                 }
 
