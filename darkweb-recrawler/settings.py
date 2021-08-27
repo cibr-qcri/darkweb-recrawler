@@ -31,7 +31,7 @@ RETRY_ENABLED = True
 
 # Timeout for processing of DNS queries in seconds. Float is supported.
 # DNS_TIMEOUT = 500
-DOWNLOAD_TIMEOUT = 500
+DOWNLOAD_TIMEOUT = 210
 
 # Depth limit for pages to the homepage of its site
 SITE_DEPTH_LIMIT = 50
@@ -225,7 +225,4 @@ SPLASH_URL = "http://" + SPLASH_SERVICE_HOST + ":" + SPLASH_SERVICE_PORT
 TOR_PROXY_HOST = os.getenv('TOR_PROXY_SERVICE_HOST')
 TOR_PROXY_PORT = os.getenv('TOR_PROXY_SERVICE_PORT')
 
-REACTOR_THREADPOOL_MAXSIZE = 50
-DOWNLOAD_MAXSIZE = 0
-DOWNLOAD_WARNSIZE = 0
 DOWNLOAD_FAIL_ON_DATALOSS = False
